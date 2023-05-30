@@ -14,21 +14,33 @@ services:
     
    links:
      - "app"
-     - "wordpress"
      
    # Storage volumes
    volumes:
      - static_volume:/home/app/blog/static
      - media_volume:/home/app/blog/mediafiles
      - ./etc/nginx/templates:/etc/nginx/templates:ro
+     - ./etc/letsencrypt:/etc/letsencrypt
+     - ./certbot/data:/var/www/certbot
      - /var/log/nginx:/var/log/nginx
-     - ./letsencrypt:/etc/letsencrypt
-
    depends_on:
      - app
-     - npm
-     - wordpress
    restart: "on-failure"
+
+ certbot:
+   container_name: certbot
+   image: certbot/certbot:latest
+   depends_on:
+     - nginx
+   command: >-
+             certonly --reinstall --webroot --webroot-path=/var/www/certbot
+             --email dariocantella@gmail.com --agree-tos --no-eff-email
+             -d cantella.hopto.org
+   volumes:
+     - ./etc/letsencrypt:/etc/letsencrypt
+     - ./certbot/data:/var/www/certbot
+   
+
 
  npm:
    image: 'jc21/nginx-proxy-manager:latest'
@@ -40,8 +52,9 @@ services:
    volumes:
      - ./data:/data
      - ./letsencrypt:/etc/letsencrypt
-     - wordpress:/var/www/html
 
+   links:
+     - "app"
  # Django application
  app:
  
@@ -63,43 +76,8 @@ services:
    expose: 
    - 8000
    restart: "on-failure"
-
-  # Wordpress Blog
- 
-
-
- db:
-  image: mysql:8.0.33
-  container_name: db
-  restart: unless-stopped
-  env_file: wordpress/.env
-  environment:
-   - MYSQL_DATABASE=wordpress
-  volumes: 
-   - dbdata:/var/lib/mysql
-  command: '--default-authentication-plugin=mysql_native_password'
-
- wordpress:
-   depends_on: 
-    - db
-   image: wordpress:6.2.2-fpm-alpine
-   container_name: wordpress
-   ports:
-    - '8001:80'
-   links:
-    - db
-   restart: unless-stopped
-   env_file: wordpress/.env
-   environment:
-    - WORDPRESS_DB_HOST=db:3306
-    - WORDPRESS_DB_USER=$MYSQL_USER
-    - WORDPRESS_DB_PASSWORD=$MYSQL_PASSWORD
-    - WORDPRESS_DB_NAME=wordpress
-   volumes:
-    - wordpress:/var/www/html
       
 volumes:
- wordpress:
- dbdata:
+ postgres_data:
  static_volume:
  media_volume:
