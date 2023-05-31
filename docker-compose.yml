@@ -29,7 +29,7 @@ services:
  app:
  
    # Build context
-   build: ./
+   build: ./django_app
    
    # Build commands
    command: sh -c "python manage.py makemigrations &&
@@ -78,6 +78,7 @@ services:
   command: tunnel run
   environment:
    - TUNNEL_TOKEN=${TOKEN}
+   
 volumes:
  wordpress:
  db:
