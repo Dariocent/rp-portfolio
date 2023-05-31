@@ -1,0 +1,85 @@
+version: '3.9'
+# Defining the compose version
+services:
+
+ # Nginx server
+ nginx:
+ 
+   # Build context
+   build: ./nginx
+   
+   # Mapping machine and container ports
+   expose: 
+     - 80
+    
+   links:
+     - "app"
+
+   # Storage volumes
+   volumes:
+     - static_volume:/home/app/blog/static
+     - media_volume:/home/app/blog/mediafiles
+     - /var/log/nginx:/var/log/nginx
+
+   depends_on:
+     - app
+   restart: "on-failure"
+
+ # Django application
+ app:
+ 
+   # Build context
+   build: ./
+   
+   # Build commands
+   command: sh -c "python manage.py makemigrations &&
+                   python manage.py migrate &&
+                   python manage.py collectstatic &&
+                   gunicorn personal-portfolio.wsgi:application --bind 0.0.0.0:8000"
+                   
+   # Storage volumes
+   volumes:
+     - static_volume:/home/app/blog/static
+     - media_volume:/home/app/blog/mediafiles
+     
+   # Exposing port 8000
+   expose: 
+   - 8000
+   restart: "on-failure"
+
+  # Wordpress Blog
+ 
+ wordpress:
+  image: wordpress
+  links:
+   - mariadb:mysql
+  expose:
+   - 80
+  restart: unless-stopped
+  environment:
+   - WORDPRESS_DB_PASSWORD=${DB_PASSWORD}
+   - WORDPRESS_DB_USER=root
+  volumes:
+   - wordpress:/var/www/html 
+
+
+ mariadb:
+  image: mariadb
+  environment:
+   - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+   - MYSQL_DATABASE=wordpress
+  volumes:
+   - db:/var/lib/mysql
+
+ tunnel:
+  container_name: cloudflared-tunnel
+  image: cloudflare/cloudflared
+  restart: unless-stopped
+  command: tunnel run
+  environment:
+   - TUNNEL_TOKEN=${TOKEN}
+volumes:
+ wordpress:
+ db:
+ static_volume:
+ media_volume:
