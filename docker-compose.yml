@@ -11,6 +11,7 @@ services:
    # Mapping machine and container ports
    expose: 
      - 80
+
     
    links:
      - "app"
