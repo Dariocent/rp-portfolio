@@ -16,6 +16,7 @@ RUN apk update
 
 # Installing python3
 RUN apk add python3-dev
+RUN apk add libffi-dev
 
 # Copying requirement file
 COPY ./requirements.txt ./
