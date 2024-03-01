@@ -2,9 +2,4 @@
 
 Website: https://cantella.dev/
 
-Docker containers managed with docker-compose:
-- Nginx server
-- Django server
-- Wordpress
-- MariaDB (stores wordpress data)
-- Cloudflared (SSL Tunnel to Cloudflare servers)
+This is the repo that powers the App Service instance in my Azure tenant, there is a GitHub actions pipeline that feeds the updates and directly deploys them onto the VM.
