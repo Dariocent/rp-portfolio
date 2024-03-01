@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
-    "projects",
     "blog",
     "whitenoise.runserver_nostatic"
 ]
