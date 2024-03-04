@@ -13,3 +13,6 @@ Docker containers managed with docker-compose on a bare-metal server (RaspberryP
 
 Azure App Service:
  - Django production server
+
+Azure Kubernetes Service with Azure DevOps Pipeline that deploys automatically from image on Azure Container Registry:
+ - Django production server
