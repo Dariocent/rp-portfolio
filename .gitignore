@@ -2,3 +2,4 @@
 django_app/.venv
 *.pyc
 *.pyo
+.venv
