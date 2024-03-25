@@ -9,6 +9,11 @@ def blog_index(request):
     #posts = Post.objects.all().order_by("-created_on")
     #context = {"posts": posts}
     return render(request, "index.html")
+
+def blog_index_test(request):
+    #posts = Post.objects.all().order_by("-created_on")
+    #context = {"posts": posts}
+    return render(request, "index_test.html")
 """
 
 def blog_category(request, category):
